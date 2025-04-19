@@ -1,26 +1,21 @@
 import { useState } from 'react'
+import { PromptList } from './components/PromptList'
+import { PromptForm } from './components/PromptForm'
+import { Prompt } from './types'
 
 function App() {
   const [showCreateForm, setShowCreateForm] = useState(false)
-  const [prompts, setPrompts] = useState([
+  const [prompts, setPrompts] = useState<Prompt[]>([
     { id: 1, title: 'Sample Prompt', content: 'This is a sample prompt content' }
   ])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const form = e.target as HTMLFormElement
-    const titleInput = form.elements.namedItem('title') as HTMLInputElement
-    const contentInput = form.elements.namedItem('content') as HTMLTextAreaElement
-    
-    const newPrompt = {
-      id: prompts.length + 1,
-      title: titleInput.value,
-      content: contentInput.value
+  const handleSubmit = (newPrompt: Omit<Prompt, 'id'>) => {
+    const prompt: Prompt = {
+      ...newPrompt,
+      id: prompts.length + 1
     }
-    
-    setPrompts([...prompts, newPrompt])
+    setPrompts([...prompts, prompt])
     setShowCreateForm(false)
-    form.reset()
   }
 
   return (
@@ -36,47 +31,13 @@ function App() {
           Create New Prompt
         </button>
       ) : (
-        <form onSubmit={handleSubmit} className="mb-4">
-          <div className="mb-2">
-            <label htmlFor="title" className="block mb-1">Title</label>
-            <input
-              data-testid="prompt-title-input"
-              type="text"
-              id="title"
-              name="title"
-              className="w-full p-2 border rounded"
-              required
-            />
-          </div>
-          <div className="mb-2">
-            <label htmlFor="content" className="block mb-1">Content</label>
-            <textarea
-              data-testid="prompt-content-input"
-              id="content"
-              name="content"
-              className="w-full p-2 border rounded"
-              rows={4}
-              required
-            />
-          </div>
-          <button
-            data-testid="submit-prompt-button"
-            type="submit"
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Save Prompt
-          </button>
-        </form>
+        <PromptForm 
+          onSubmit={handleSubmit}
+          onCancel={() => setShowCreateForm(false)}
+        />
       )}
       
-      <div data-testid="prompt-list" className="space-y-4">
-        {prompts.map(prompt => (
-          <div key={prompt.id} className="border p-4 rounded">
-            <h2 className="text-xl font-semibold">{prompt.title}</h2>
-            <p className="mt-2">{prompt.content}</p>
-          </div>
-        ))}
-      </div>
+      <PromptList prompts={prompts} />
     </div>
   )
 }

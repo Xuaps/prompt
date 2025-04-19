@@ -29,7 +29,7 @@ function App() {
       
       {!showCreateForm ? (
         <button 
-          data-test="create-prompt-button"
+          data-testid="create-prompt-button"
           onClick={() => setShowCreateForm(true)}
           className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
         >
@@ -40,7 +40,7 @@ function App() {
           <div className="mb-2">
             <label htmlFor="title" className="block mb-1">Title</label>
             <input
-              data-test="prompt-title-input"
+              data-testid="prompt-title-input"
               type="text"
               id="title"
               name="title"
@@ -51,7 +51,7 @@ function App() {
           <div className="mb-2">
             <label htmlFor="content" className="block mb-1">Content</label>
             <textarea
-              data-test="prompt-content-input"
+              data-testid="prompt-content-input"
               id="content"
               name="content"
               className="w-full p-2 border rounded"
@@ -60,7 +60,7 @@ function App() {
             />
           </div>
           <button
-            data-test="submit-prompt-button"
+            data-testid="submit-prompt-button"
             type="submit"
             className="bg-green-500 text-white px-4 py-2 rounded"
           >
@@ -69,7 +69,7 @@ function App() {
         </form>
       )}
       
-      <div data-test="prompt-list" className="space-y-4">
+      <div data-testid="prompt-list" className="space-y-4">
         {prompts.map(prompt => (
           <div key={prompt.id} className="border p-4 rounded">
             <h2 className="text-xl font-semibold">{prompt.title}</h2>

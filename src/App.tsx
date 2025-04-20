@@ -1,20 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { PromptList } from './components/PromptList'
 import { PromptForm } from './components/PromptForm'
 import { Prompt } from './types'
+import { LocalStoragePromptRepository } from './repositories/PromptRepository'
+
+const promptRepository = new LocalStoragePromptRepository()
 
 function App() {
   const [showCreateForm, setShowCreateForm] = useState(false)
-  const [prompts, setPrompts] = useState<Prompt[]>([
-    { id: 1, title: 'Sample Prompt', content: 'This is a sample prompt content' }
-  ])
+  const [prompts, setPrompts] = useState<Prompt[]>([])
 
-  const handleSubmit = (newPrompt: Omit<Prompt, 'id'>) => {
-    const prompt: Prompt = {
-      ...newPrompt,
-      id: prompts.length + 1
-    }
-    setPrompts([...prompts, prompt])
+  useEffect(() => {
+    loadPrompts()
+  }, [])
+
+  const loadPrompts = async () => {
+    const loadedPrompts = await promptRepository.getAll()
+    setPrompts(loadedPrompts)
+  }
+
+  const handleSubmit = async (newPrompt: Omit<Prompt, 'id'>) => {
+    const savedPrompt = await promptRepository.save(newPrompt)
+    setPrompts([...prompts, savedPrompt])
     setShowCreateForm(false)
   }
 

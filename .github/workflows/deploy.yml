@@ -42,7 +42,7 @@ jobs:
         run: npm run build
 
       - name: Run Cypress tests
-        run: npx start-server-and-test 'npm run preview' http://localhost:4173 'cypress run'
+        run: npx start-server-and-test 'npm run preview' http://localhost:4173 'cypress run --config-file cypress.config.ts'
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

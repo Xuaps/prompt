@@ -6,6 +6,37 @@ import tsParser from '@typescript-eslint/parser'
 
 export default [
   { ignores: ['dist'] },
+  // Special rules for type definitions
+  {
+    files: ['**/*.d.ts'],
+    languageOptions: {
+      parser: tsParser,
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+  // Special rules for test files
+  {
+    files: ['**/*.test.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+  // Main rules
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {

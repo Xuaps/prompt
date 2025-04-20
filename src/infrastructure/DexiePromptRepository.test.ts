@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { DexiePromptRepository } from './DexiePromptRepository'
 import { Prompt } from '../domain/Prompt'
+import { PromptMother } from '../test/helpers/PromptMother'
 
 describe('DexiePromptRepository', () => {
   let repository: DexiePromptRepository
@@ -31,7 +32,12 @@ describe('DexiePromptRepository', () => {
     const prompt = Prompt.create('Test Prompt', 'Test Content')
     const savedPrompt = await repository.save(prompt)
     
-    const updatedPrompt = savedPrompt.withContent('Updated Content')
+    const updatedPrompt = PromptMother.create({
+      id: savedPrompt.id,
+      title: savedPrompt.title,
+      content: 'Updated Content'
+    })
+    
     const result = await repository.save(updatedPrompt)
     
     expect(result.content).toBe('Updated Content')

@@ -1,5 +1,3 @@
-import { Prompt } from '../domain/Prompt'
-
 interface PromptData {
   id: number | null
   title: string

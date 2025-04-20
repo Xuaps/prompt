@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Prompt } from '../domain/Prompt'
 
 interface PromptFormProps {
   onSubmit: (title: string, content: string) => void

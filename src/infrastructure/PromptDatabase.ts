@@ -1,5 +1,4 @@
 import Dexie, { Table } from 'dexie'
-import { Prompt } from '../domain/Prompt'
 
 interface PromptTable extends Table {
   id?: number

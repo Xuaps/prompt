@@ -26,7 +26,7 @@ export default [
     },
     rules: {
       ...js.configs.recommended.rules,
-      ...tseslint.configs.recommended.rules,
+      ...tseslint.rules,
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
         'warn',

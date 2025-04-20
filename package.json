@@ -15,7 +15,7 @@
     "test:watch": "vitest watch",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "test:e2e": "start-server-and-test dev http://localhost:5173 cypress:run"
+    "test:e2e": "start-server-and-test preview http://localhost:4173 cypress:run"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",

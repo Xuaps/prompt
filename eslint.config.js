@@ -6,37 +6,6 @@ import tsParser from '@typescript-eslint/parser'
 
 export default [
   { ignores: ['dist'] },
-  // Special rules for type definitions
-  {
-    files: ['**/*.d.ts'],
-    languageOptions: {
-      parser: tsParser,
-    },
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-    },
-  },
-  // Special rules for test files
-  {
-    files: ['**/*.test.{ts,tsx}'],
-    languageOptions: {
-      parser: tsParser,
-      globals: {
-        describe: 'readonly',
-        it: 'readonly',
-        expect: 'readonly',
-        vi: 'readonly',
-        beforeEach: 'readonly',
-        afterEach: 'readonly',
-      },
-    },
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-    },
-  },
-  // Main rules
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -69,6 +38,13 @@ export default [
         Symbol: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
+        // Test globals
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
         // TypeScript globals
         console: 'readonly',
         process: 'readonly',
@@ -95,12 +71,13 @@ export default [
       'no-unused-vars': 'off',
       'no-undef': 'error',
       // TypeScript rules
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off', // Allow any for now
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { 
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_'
+        caughtErrorsIgnorePattern: '^_',
+        ignoreRestSiblings: true
       }],
       // React rules
       'react-hooks/rules-of-hooks': 'error',

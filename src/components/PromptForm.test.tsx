@@ -75,4 +75,57 @@ describe('PromptForm', () => {
     
     expect(onCancel).toHaveBeenCalled()
   })
+
+  it('clears form fields after successful submission', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    const onCancel = vi.fn()
+    
+    render(<PromptForm onSubmit={onSubmit} onCancel={onCancel} />)
+    
+    const titleInput = screen.getByTestId('prompt-title-input')
+    const contentInput = screen.getByTestId('prompt-content-input')
+    
+    await user.type(titleInput, 'Test Title')
+    await user.type(contentInput, 'Test Content')
+    await user.click(screen.getByTestId('submit-prompt-button'))
+    
+    expect(titleInput).toHaveValue('')
+    expect(contentInput).toHaveValue('')
+  })
+
+  it('handles whitespace-only input validation', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    const onCancel = vi.fn()
+    
+    render(<PromptForm onSubmit={onSubmit} onCancel={onCancel} />)
+    
+    const titleInput = screen.getByTestId('prompt-title-input')
+    const contentInput = screen.getByTestId('prompt-content-input')
+    
+    await user.type(titleInput, '   ')
+    await user.type(contentInput, '  ')
+    await user.click(screen.getByTestId('submit-prompt-button'))
+    
+    expect(screen.getByText('Title is required')).toBeInTheDocument()
+    expect(screen.getByText('Content is required')).toBeInTheDocument()
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('clears validation errors when input is corrected', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    const onCancel = vi.fn()
+    
+    render(<PromptForm onSubmit={onSubmit} onCancel={onCancel} />)
+    
+    // Submit empty form to trigger validation errors
+    await user.click(screen.getByTestId('submit-prompt-button'))
+    expect(screen.getByText('Title is required')).toBeInTheDocument()
+    
+    // Fix the title input
+    await user.type(screen.getByTestId('prompt-title-input'), 'Test Title')
+    expect(screen.queryByText('Title is required')).not.toBeInTheDocument()
+  })
 }) 

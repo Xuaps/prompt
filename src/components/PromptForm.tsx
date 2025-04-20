@@ -37,6 +37,20 @@ export function PromptForm({ onSubmit, onCancel }: PromptFormProps) {
     }
   }
 
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value)
+    if (errors.title) {
+      setErrors(prev => ({ ...prev, title: undefined }))
+    }
+  }
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value)
+    if (errors.content) {
+      setErrors(prev => ({ ...prev, content: undefined }))
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className="mb-4">
       <div className="mb-2">
@@ -46,7 +60,7 @@ export function PromptForm({ onSubmit, onCancel }: PromptFormProps) {
           type="text"
           id="title"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={handleTitleChange}
           className={`w-full p-2 border rounded ${errors.title ? 'border-red-500' : ''}`}
         />
         {errors.title && (
@@ -59,7 +73,7 @@ export function PromptForm({ onSubmit, onCancel }: PromptFormProps) {
           data-testid="prompt-content-input"
           id="content"
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={handleContentChange}
           className={`w-full p-2 border rounded ${errors.content ? 'border-red-500' : ''}`}
           rows={4}
         />

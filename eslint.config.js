@@ -12,7 +12,10 @@ export default [
     languageOptions: {
       parser: tsParser,
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...globals.es2020
+      },
       parserOptions: {
         ecmaFeatures: {
           jsx: true

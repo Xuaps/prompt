@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { DexiePromptRepository } from './DexiePromptRepository'
 import { Prompt } from '../domain/Prompt'
-import { PromptMother } from '../test/helpers/PromptMother'
 
 describe('DexiePromptRepository', () => {
   let repository: DexiePromptRepository

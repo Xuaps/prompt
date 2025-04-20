@@ -32,11 +32,7 @@ describe('DexiePromptRepository', () => {
     const prompt = Prompt.create('Test Prompt', 'Test Content')
     const savedPrompt = await repository.save(prompt)
     
-    const updatedPrompt = PromptMother.create({
-      id: savedPrompt.id,
-      title: savedPrompt.title,
-      content: 'Updated Content'
-    })
+    const updatedPrompt = savedPrompt.update(savedPrompt.title, 'Updated Content')
     
     const result = await repository.save(updatedPrompt)
     

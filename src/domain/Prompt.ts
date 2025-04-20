@@ -27,6 +27,14 @@ export class Prompt {
     }
   }
 
+  static create(title: string, content: string): Prompt {
+    return new Prompt(null, title, content)
+  }
+
+  withId(id: number): Prompt {
+    return new Prompt(id, this.title, this.content, this.createdAt, this.updatedAt)
+  }
+
   update(title: string, content: string): Prompt {
     return new Prompt(this.id, title, content, this.createdAt, new Date())
   }

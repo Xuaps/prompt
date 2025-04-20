@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import { PromptList } from './PromptList'
-import { PromptMother } from '../test/helpers/PromptMother'
 
 interface PromptData {
   id: number | null
@@ -13,18 +12,37 @@ interface PromptData {
 
 describe('PromptList', () => {
   it('renders empty state when no prompts', () => {
-    render(<PromptList prompts={PromptMother.createEmpty()} />)
-    expect(screen.getByText(/No prompts yet/i)).toBeInTheDocument()
+    render(<PromptList prompts={[]} />)
+    expect(screen.getByTestId('empty-prompt-list')).toBeInTheDocument()
+    expect(screen.getByText('No prompts yet. Click "Create New Prompt" to get started.')).toBeInTheDocument()
   })
 
   it('renders list of prompts', () => {
-    const prompts = PromptMother.createList(2)
+    const now = new Date()
+    const prompts: PromptData[] = [
+      {
+        id: 1,
+        title: 'Test Prompt 1',
+        content: 'Content 1',
+        createdAt: now,
+        updatedAt: now
+      },
+      {
+        id: 2,
+        title: 'Test Prompt 2',
+        content: 'Content 2',
+        createdAt: now,
+        updatedAt: now
+      }
+    ]
+    
     render(<PromptList prompts={prompts} />)
     
+    expect(screen.getByTestId('prompt-list')).toBeInTheDocument()
     expect(screen.getByText('Test Prompt 1')).toBeInTheDocument()
-    expect(screen.getByText('This is test prompt content 1')).toBeInTheDocument()
+    expect(screen.getByText('Content 1')).toBeInTheDocument()
     expect(screen.getByText('Test Prompt 2')).toBeInTheDocument()
-    expect(screen.getByText('This is test prompt content 2')).toBeInTheDocument()
+    expect(screen.getByText('Content 2')).toBeInTheDocument()
   })
 
   it('renders prompts with special characters in title and content', () => {

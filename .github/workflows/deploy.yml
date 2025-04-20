@@ -41,27 +41,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Start preview server
-        run: npm run preview &
-        shell: bash
-
-      - name: Wait for preview server
-        run: |
-          timeout=30
-          while ! curl -s http://localhost:4173 > /dev/null; do
-            if [ $timeout -le 0 ]; then
-              echo "Preview server failed to start"
-              exit 1
-            fi
-            sleep 1
-            timeout=$((timeout-1))
-          done
-          echo "Preview server is running"
-
       - name: Run Cypress tests
-        uses: cypress-io/github-action@v6
-        with:
-          wait-on: 'http://localhost:4173'
+        run: npx start-server-and-test 'npm run preview' http://localhost:4173 'cypress run'
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

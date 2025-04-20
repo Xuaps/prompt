@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Prompt } from '../types'
+import { Prompt } from '../domain/Prompt'
 
 interface PromptFormProps {
-  onSubmit: (prompt: Omit<Prompt, 'id'>) => void
+  onSubmit: (title: string, content: string) => void
   onCancel: () => void
 }
 
@@ -30,7 +30,7 @@ export function PromptForm({ onSubmit, onCancel }: PromptFormProps) {
     e.preventDefault()
     
     if (validateForm()) {
-      onSubmit({ title, content })
+      onSubmit(title, content)
       setTitle('')
       setContent('')
       setErrors({})

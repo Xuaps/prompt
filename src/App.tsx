@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { PromptList } from './components/PromptList'
 import { PromptForm } from './components/PromptForm'
-import { Prompt } from './types'
-import { LocalStoragePromptRepository } from './repositories/PromptRepository'
+import { Prompt } from './domain/Prompt'
+import { DexiePromptRepository } from './infrastructure/DexiePromptRepository'
 
-const promptRepository = new LocalStoragePromptRepository()
+const promptRepository = new DexiePromptRepository()
 
 function App() {
   const [showCreateForm, setShowCreateForm] = useState(false)
@@ -19,7 +19,8 @@ function App() {
     setPrompts(loadedPrompts)
   }
 
-  const handleSubmit = async (newPrompt: Omit<Prompt, 'id'>) => {
+  const handleSubmit = async (title: string, content: string) => {
+    const newPrompt = Prompt.create(title, content)
     const savedPrompt = await promptRepository.save(newPrompt)
     setPrompts([...prompts, savedPrompt])
     setShowCreateForm(false)

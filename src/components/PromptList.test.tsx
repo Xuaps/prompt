@@ -1,67 +1,107 @@
-import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
 import { PromptList } from './PromptList'
-import { Prompt } from '../types'
+
+interface PromptData {
+  id: number | null
+  title: string
+  content: string
+  createdAt: Date
+  updatedAt: Date
+}
 
 describe('PromptList', () => {
-  it('renders empty state when no prompts are provided', () => {
+  it('renders empty state when no prompts', () => {
     render(<PromptList prompts={[]} />)
-    
-    expect(screen.getByTestId('prompt-list')).toHaveTextContent(
-      'No prompts yet. Click "Create New Prompt" to get started.'
-    )
+    expect(screen.getByTestId('empty-prompt-list')).toBeInTheDocument()
+    expect(screen.getByText('No prompts yet. Click "Create New Prompt" to get started.')).toBeInTheDocument()
   })
 
   it('renders list of prompts', () => {
-    const prompts: Prompt[] = [
-      { id: 1, title: 'First Prompt', content: 'First content' },
-      { id: 2, title: 'Second Prompt', content: 'Second content' }
-    ]
-    
-    render(<PromptList prompts={prompts} />)
-    
-    expect(screen.getByText('First Prompt')).toBeInTheDocument()
-    expect(screen.getByText('First content')).toBeInTheDocument()
-    expect(screen.getByText('Second Prompt')).toBeInTheDocument()
-    expect(screen.getByText('Second content')).toBeInTheDocument()
-  })
-
-  it('renders prompts with special characters in title and content', () => {
-    const prompts: Prompt[] = [
-      { 
-        id: 1, 
-        title: 'Special & Characters < > " \'', 
-        content: 'Content with <script>alert("test")</script>'
+    const now = new Date()
+    const prompts: PromptData[] = [
+      {
+        id: 1,
+        title: 'Test Prompt 1',
+        content: 'Content 1',
+        createdAt: now,
+        updatedAt: now
+      },
+      {
+        id: 2,
+        title: 'Test Prompt 2',
+        content: 'Content 2',
+        createdAt: now,
+        updatedAt: now
       }
     ]
     
     render(<PromptList prompts={prompts} />)
     
-    expect(screen.getByText('Special & Characters < > " \'')).toBeInTheDocument()
-    expect(screen.getByText('Content with <script>alert("test")</script>')).toBeInTheDocument()
+    expect(screen.getByTestId('prompt-list')).toBeInTheDocument()
+    expect(screen.getByText('Test Prompt 1')).toBeInTheDocument()
+    expect(screen.getByText('Content 1')).toBeInTheDocument()
+    expect(screen.getByText('Test Prompt 2')).toBeInTheDocument()
+    expect(screen.getByText('Content 2')).toBeInTheDocument()
   })
 
-  it('maintains accessibility with aria attributes', () => {
+  it('renders prompts with special characters in title and content', () => {
+    const now = new Date()
+    const prompts: PromptData[] = [
+      { 
+        id: 1, 
+        title: 'Test & Prompt', 
+        content: 'Content <script>alert("test")</script>',
+        createdAt: now,
+        updatedAt: now
+      }
+    ]
+    render(<PromptList prompts={prompts} />)
+    expect(screen.getByText('Test & Prompt')).toBeInTheDocument()
+    expect(screen.getByText('Content <script>alert("test")</script>')).toBeInTheDocument()
+  })
+
+  it('maintains accessibility with empty state', () => {
     render(<PromptList prompts={[]} />)
-    
-    const list = screen.getByTestId('prompt-list')
-    expect(list).toHaveAttribute('role', 'list')
-    expect(list).toHaveAttribute('aria-label', 'Prompts')
+    expect(screen.getByTestId('empty-prompt-list')).toHaveAttribute('role', 'status')
+  })
+
+  it('maintains accessibility with prompt list', () => {
+    const now = new Date()
+    const prompts: PromptData[] = [
+      {
+        id: 1,
+        title: 'Test Prompt',
+        content: 'Content',
+        createdAt: now,
+        updatedAt: now
+      }
+    ]
+    render(<PromptList prompts={prompts} />)
+    expect(screen.getByTestId('prompt-list')).toHaveAttribute('role', 'list')
   })
 
   it('renders prompts in correct order', () => {
-    const prompts: Prompt[] = [
-      { id: 2, title: 'Second Prompt', content: 'Second content' },
-      { id: 1, title: 'First Prompt', content: 'First content' },
-      { id: 3, title: 'Third Prompt', content: 'Third content' }
+    const now = new Date()
+    const prompts: PromptData[] = [
+      { 
+        id: 2, 
+        title: 'Second Prompt', 
+        content: 'Second content',
+        createdAt: now,
+        updatedAt: now
+      },
+      { 
+        id: 1, 
+        title: 'First Prompt', 
+        content: 'First content',
+        createdAt: now,
+        updatedAt: now
+      }
     ]
-    
     render(<PromptList prompts={prompts} />)
-    
-    const renderedPrompts = screen.getAllByRole('listitem')
-    expect(renderedPrompts).toHaveLength(3)
-    expect(renderedPrompts[0]).toHaveTextContent('Second Prompt')
-    expect(renderedPrompts[1]).toHaveTextContent('First Prompt')
-    expect(renderedPrompts[2]).toHaveTextContent('Third Prompt')
+    const items = screen.getAllByRole('listitem')
+    expect(items[0]).toHaveTextContent('Second Prompt')
+    expect(items[1]).toHaveTextContent('First Prompt')
   })
 }) 

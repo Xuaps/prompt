@@ -1,85 +1,108 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
-import { LocalStoragePromptRepository } from './repositories/PromptRepository'
+import { DexiePromptRepository } from './infrastructure/DexiePromptRepository'
+import { Prompt } from './domain/Prompt'
 
 describe('App Integration', () => {
-  let repository: LocalStoragePromptRepository
+  let repository: DexiePromptRepository
 
-  beforeEach(() => {
-    // Clear localStorage before each test
-    localStorage.clear()
-    repository = new LocalStoragePromptRepository()
+  beforeEach(async () => {
+    repository = new DexiePromptRepository()
+    await repository.clear()
+  })
+
+  afterEach(async () => {
+    await repository.clear()
   })
 
   it('shows empty state when no prompts exist', async () => {
-    render(<App />)
-
-    await waitFor(() => {
-      expect(screen.getByText(/no prompts yet/i)).toBeInTheDocument()
+    await act(async () => {
+      render(<App />)
+    })
+    
+    await waitFor(async () => {
+      expect(await screen.findByText(/no prompts yet/i)).toBeInTheDocument()
     })
   })
 
   it('creates a new prompt and updates the list', async () => {
     const user = userEvent.setup()
-    render(<App />)
-
-    // Click create button
-    await user.click(screen.getByTestId('create-prompt-button'))
-
-    // Fill form
-    await user.type(screen.getByLabelText(/title/i), 'New Prompt')
-    await user.type(screen.getByLabelText(/content/i), 'New Content')
-    
-    // Submit form
-    await user.click(screen.getByRole('button', { name: /save/i }))
-
-    // Verify UI updates
-    await waitFor(() => {
-      expect(screen.getByText('New Prompt')).toBeInTheDocument()
-      expect(screen.getByText('New Content')).toBeInTheDocument()
+    await act(async () => {
+      render(<App />)
     })
 
+    // Wait for initial load and click create button
+    const createButton = await screen.findByTestId('create-prompt-button')
+    await act(async () => {
+      await user.click(createButton)
+    })
+
+    // Fill form
+    const titleInput = await screen.findByLabelText(/title/i)
+    const contentInput = await screen.findByLabelText(/content/i)
+    await act(async () => {
+      await user.type(titleInput, 'New Prompt')
+      await user.type(contentInput, 'New Content')
+    })
+    
+    // Submit form
+    const submitButton = await screen.findByRole('button', { name: /save/i })
+    await act(async () => {
+      await user.click(submitButton)
+    })
+
+    // Verify UI updates
+    await screen.findByText('New Prompt')
+    await screen.findByText('New Content')
+
     // Verify data persistence
-    const storedPrompts = JSON.parse(localStorage.getItem('prompts') || '[]')
-    expect(storedPrompts).toHaveLength(1)
-    expect(storedPrompts[0]).toEqual({
-      id: 1,
-      title: 'New Prompt',
-      content: 'New Content'
+    await waitFor(async () => {
+      const prompts = await repository.getAll()
+      expect(prompts).toHaveLength(1)
+      expect(prompts[0].title).toBe('New Prompt')
+      expect(prompts[0].content).toBe('New Content')
     })
   })
 
   it('shows form on create button click and hides on cancel', async () => {
     const user = userEvent.setup()
-    render(<App />)
+    await act(async () => {
+      render(<App />)
+    })
 
-    // Initially form should not be visible
+    // Wait for initial load and verify form is not visible
+    const createButton = await screen.findByTestId('create-prompt-button')
     expect(screen.queryByTestId('prompt-title-input')).not.toBeInTheDocument()
 
-    // Click create button
-    await user.click(screen.getByTestId('create-prompt-button'))
-    expect(screen.getByTestId('prompt-title-input')).toBeInTheDocument()
+    // Click create button and verify form appears
+    await act(async () => {
+      await user.click(createButton)
+    })
+    await screen.findByTestId('prompt-title-input')
 
-    // Click cancel
-    await user.click(screen.getByRole('button', { name: /cancel/i }))
-    expect(screen.queryByTestId('prompt-title-input')).not.toBeInTheDocument()
+    // Click cancel and verify form disappears
+    const cancelButton = await screen.findByRole('button', { name: /cancel/i })
+    await act(async () => {
+      await user.click(cancelButton)
+    })
+    await waitFor(() => {
+      expect(screen.queryByTestId('prompt-title-input')).not.toBeInTheDocument()
+    })
   })
 
   it('loads existing prompts on mount', async () => {
-    // Setup: Add some prompts to localStorage
-    const existingPrompts = [
-      { id: 1, title: 'Existing Prompt', content: 'Existing Content' }
-    ]
-    localStorage.setItem('prompts', JSON.stringify(existingPrompts))
+    // Create a prompt in the database
+    const existingPrompt = Prompt.create('Existing Prompt', 'Existing Content')
+    await repository.save(existingPrompt)
 
-    render(<App />)
+    await act(async () => {
+      render(<App />)
+    })
 
     // Verify prompts are loaded
-    await waitFor(() => {
-      expect(screen.getByText('Existing Prompt')).toBeInTheDocument()
-      expect(screen.getByText('Existing Content')).toBeInTheDocument()
-    })
+    await screen.findByText('Existing Prompt')
+    await screen.findByText('Existing Content')
   })
 }) 

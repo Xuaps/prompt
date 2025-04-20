@@ -21,6 +21,10 @@ export default [
         localStorage: 'readonly',
         sessionStorage: 'readonly',
         indexedDB: 'readonly',
+        // DOM types
+        HTMLInputElement: 'readonly',
+        HTMLTextAreaElement: 'readonly',
+        IDBTransactionMode: 'readonly',
         // React globals
         React: 'readonly',
         // ES2020 globals
@@ -32,6 +36,8 @@ export default [
         Proxy: 'readonly',
         Reflect: 'readonly',
         Symbol: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
         // TypeScript globals
         console: 'readonly',
         process: 'readonly',
@@ -55,12 +61,16 @@ export default [
     rules: {
       // Base rules
       'no-dupe-class-members': 'error',
-      'no-unused-vars': 'warn',
+      'no-unused-vars': 'off',
       'no-undef': 'error',
       // TypeScript rules
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': ['warn', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_'
+      }],
       // React rules
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
